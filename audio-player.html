@@ -1,0 +1,37 @@
+<link rel="import" href="../polymer/polymer-element.html">
+
+<dom-module id="audio-player">
+    <template>
+        <style>
+            :host {
+                display : block;
+            }
+        </style>
+        <h2>Hello [[prop1]]!</h2>
+    </template>
+
+    <script>
+        /**
+         * `audio-player`
+         * simple audio player
+         *
+         * @customElement
+         * @polymer
+         * @demo demo/index.html
+         */
+        class AudioPlayer extends Polymer.Element {
+            static get is () { return 'audio-player'; }
+
+            static get properties () {
+                return {
+                    prop1: {
+                        type : String,
+                        value: 'audio-player'
+                    }
+                };
+            }
+        }
+
+        window.customElements.define (AudioPlayer.is, AudioPlayer);
+    </script>
+</dom-module>
