@@ -22,9 +22,21 @@
     <h3>Basic audio-player demo</h3>
     <demo-snippet>
         <template>
-            <audio-player></audio-player>
+            <audio-player src="./sound.mp3" volume="5"></audio-player>
+            <button onclick="play()">button</button>
         </template>
     </demo-snippet>
+
+    <audio-player src="./sound.mp3" volume="5"></audio-player>
+    <button onclick="play()">button</button>
 </div>
+<script>
+    const audio = document.querySelector ('audio-player');
+    console.log (audio);
+
+    function play () {
+        audio.play ();
+    }
+</script>
 </body>
 </html>
