@@ -7,6 +7,9 @@
                 display : block;
             }
         </style>
+        <template is="dom-if" if="{{button}}">
+            <button on-click="_play">play</button>
+        </template>
     </template>
 
     <script>
@@ -40,6 +43,10 @@
                         notify  : true,
                         observer: '_observerPlay',
                     },
+                    button     : {
+                        type              : Boolean,
+                        reflectToAttribute: true
+                    }
                 };
             }
 
@@ -115,7 +122,9 @@
             }
 
             _play () {
-                this.soundSource.start (0);
+                if (this.play === false) {
+                    this.play = true;
+                }
             }
         }
 
