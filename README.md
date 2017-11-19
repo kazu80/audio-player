@@ -1,21 +1,48 @@
+[![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-blue.svg)](https://www.webcomponents.org/element/owner/my-element)
+
 # \<audio-player\>
 
-simple audio player
+simple audio player.  
+This is playing with web audio api.  
+Just write the path to the sound file and you can play it.
 
-## Install the Polymer-CLI
+## DEMO
 
-First, make sure you have the [Polymer CLI](https://www.npmjs.com/package/polymer-cli) installed. Then run `polymer serve` to serve your element locally.
+<!--
+```html
+<custom-element-demo>
+  <template>
+    <link rel="import" href="./audio-player.html">
+    <next-code-block></next-code-block>
+  </template>
+</custom-element-demo>
+```
+-->
+```html
+<audio-player src="./demo/sound.mp3" volume="5" button></audio-player>
+```
 
-## Viewing Your Element
+## Installation
 
 ```
-$ polymer serve
+$ bower install --save monkick/audio-player
 ```
 
-## Running Tests
+## Usage
 
-```
-$ polymer test
+At first. Import it at header.  
+
+```html
+    <link rel="import" href="../bower_components/audio-player/audio-player.html">
 ```
 
-Your application is already set up to be tested via [web-component-tester](https://github.com/Polymer/web-component-tester). Run `polymer test` to run your application's test suite locally.
+Next. Add the `audio-player` custom tag in body.
+
+```html
+    <audio-player src="./demo/sound.mp3" volume="5" button></audio-player>
+```
+
+* src: path of sound file
+* volume: Volume range 1 to 10
+* button: Add button argument that button will appear for play sound file. If you want control myself than you can see demo/index.html.
+
