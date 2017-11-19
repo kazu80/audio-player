@@ -12,7 +12,8 @@ Just write the path to the sound file and you can play it.
 ```html
 <custom-element-demo>
   <template>
-    <link rel="import" href="./audio-player.html">
+    <script src="../webcomponentsjs/webcomponents-lite.js"></script>
+    <link rel="import" href="audio-player.html">
     <next-code-block></next-code-block>
   </template>
 </custom-element-demo>
