@@ -30,6 +30,7 @@
                     context    : Object,
                     soundSource: Object,
                     soundGain  : Object,
+                    onend      : Object,
                     src        : {
                         type    : String,
                         notify  : true,
@@ -113,6 +114,12 @@
 
                 this.soundSource.onended = () => {
                     this.play = false;
+
+                    // if set callback method
+                    if (this.onend) {
+                        this.onend (e);
+                    }
+
                     this.initialSound (buffer, this.volume * 0.1);
                 };
             }

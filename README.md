@@ -47,3 +47,6 @@ Next. Add the `audio-player` custom tag in body.
 * volume: Volume range 1 to 10
 * button: Add button argument that button will appear for play sound file. If you want control myself than you can see demo/index.html.
 
+## Event
+
+* onend: It fire when audio is over.

@@ -33,6 +33,10 @@
             <script>
                 const audio = document.querySelector ('#foo');
 
+                audio.ended = (e) => {
+                    console.info ('Sound is over.');
+                };
+
                 function play () {
                     audio._play ();
                 }
