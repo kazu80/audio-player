@@ -112,7 +112,7 @@
                 this.soundGain.connect (this.context.destination);
                 this.soundSource.connect (this.soundGain);
 
-                this.soundSource.onended = () => {
+                this.soundSource.onended = (e) => {
                     this.play = false;
 
                     // if set callback method
