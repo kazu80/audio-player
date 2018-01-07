@@ -69,6 +69,10 @@
             }
 
             _observerSRC (src) {
+                if (!src) {
+                    return;
+                }
+
                 this._loadBufferFromURL (src, (buffer) => {
                     this.initialSound (buffer, this.volume * 0.1);
                 });
