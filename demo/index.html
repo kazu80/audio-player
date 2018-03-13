@@ -22,13 +22,14 @@
     <h3>Basic audio-player demo</h3>
     <demo-snippet>
         <template>
-            <audio-player src="./sound.mp3" volume="5" button></audio-player>
+            <audio-player src="./sound.mp3" volume="3" button></audio-player>
         </template>
     </demo-snippet>
     <demo-snippet>
         <template>
-            <audio-player id="foo" src="./sound.mp3" volume="5"></audio-player>
+            <audio-player id="foo" src="./sound02.mp3" volume="5"></audio-player>
             <button onclick="play()">play</button>
+            <button onclick="stop()">stop</button>
 
             <script>
                 const audio = document.querySelector ('#foo');
@@ -39,6 +40,10 @@
 
                 function play () {
                     audio._play ();
+                }
+
+                function stop () {
+                    audio._stop ();
                 }
             </script>
         </template>

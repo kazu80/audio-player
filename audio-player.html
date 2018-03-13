@@ -10,6 +10,7 @@
         </style>
         <template is="dom-if" if="{{button}}">
             <button on-click="_play">play</button>
+            <button on-click="_stop">stop</button>
         </template>
     </template>
 
@@ -45,6 +46,12 @@
                         value   : false,
                         notify  : true,
                         observer: '_observerPlay',
+                    },
+                    stop       : {
+                        type    : Boolean,
+                        value   : false,
+                        notify  : true,
+                        observer: '_observerStop',
                     },
                     button     : {
                         type              : Boolean,
@@ -99,8 +106,8 @@
                     );
                 };
 
-                request.onerror = function () {
-                    alert ('BufferLoader: XHR error');
+                request.onerror = function (e) {
+                    console.error ('BufferLoader: XHR error:', e);
                 };
 
                 request.send ();
@@ -118,6 +125,7 @@
 
                 this.soundSource.onended = (e) => {
                     this.play = false;
+                    this.stop = false;
 
                     // if set callback method
                     if (this.onend) {
@@ -134,9 +142,21 @@
                 }
             }
 
+            _observerStop (val) {
+                if (this.stop === true) {
+                    this.soundSource.stop ();
+                }
+            }
+
             _play () {
                 if (this.play === false) {
                     this.play = true;
+                }
+            }
+
+            _stop () {
+                if (this.play === true) {
+                    this.stop = true;
                 }
             }
         }

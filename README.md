@@ -50,3 +50,9 @@ Next. Add the `audio-player` custom tag in body.
 ## Event
 
 * onend: It fire when audio is over.
+
+
+## Method
+
+* `_play`: play sound.
+* `_stop`: stop sound.
