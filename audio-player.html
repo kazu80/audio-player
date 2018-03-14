@@ -63,6 +63,7 @@
             constructor () {
                 super ();
 
+                window.AudioContext = window.AudioContext || window.webkitAudioContext;
                 this.context = new AudioContext ();
             }
 
