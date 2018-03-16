@@ -160,6 +160,15 @@
                     this.stop = true;
                 }
             }
+
+            _silent() {
+                const context = this.context;
+                const buf = context.createBuffer(1, 1, 22050);
+                const src = context.createBufferSource();
+                src.buffer = buf;
+                src.connect(context.destination);
+                src.start(0);
+            }
         }
 
         window.customElements.define (AudioPlayer.is, AudioPlayer);

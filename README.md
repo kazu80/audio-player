@@ -56,3 +56,4 @@ Next. Add the `audio-player` custom tag in body.
 
 * `_play`: play sound.
 * `_stop`: stop sound.
+* `_silent`: play silent sound. For sound from iOS.
