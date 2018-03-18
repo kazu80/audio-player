@@ -78,6 +78,14 @@
                     analyzeSVG : {
                         type  : String,
                         notify: true,
+                    },
+                    analyzeData: {
+                        type  : Array,
+                        notify: true,
+                    },
+                    fftSize    : {
+                        type : Number,
+                        value: 128,
                     }
                 };
             }
@@ -160,7 +168,7 @@
                     this.initialSound (buffer, this.volume * 0.1);
                 };
 
-                this.analyser.fftSize = 128;
+                this.analyser.fftSize = this.fftSize;
                 this.size = {
                     width : 400,
                     height: 256,
@@ -183,8 +191,8 @@
                     });
 
                     this.analyzeSVG = d;
+                    this.analyzeData = data;
 
-                    // 音が鳴っていたら再度呼び出し
                     if (this.play === true) {
                         window.requestAnimationFrame (update.bind (this));
                     }
