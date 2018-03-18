@@ -51,6 +51,10 @@ Next. Add the `audio-player` custom tag in body.
 
 * onend: It fire when audio is over.
 
+## Parameter
+
+* `control`: appear control ui.
+* `analyze`: appear svg of analyze to sound. 
 
 ## Method
 

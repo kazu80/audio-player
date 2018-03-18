@@ -12,6 +12,20 @@
             <button on-click="_play">play</button>
             <button on-click="_stop">stop</button>
         </template>
+
+        <template is="dom-if" if="{{analyze}}">
+            <svg
+                    ref="scope"
+                    width="400"
+                    height="256"
+                    xmlns="http://www.w3.org/2000/svg"
+                    baseProfile="full"
+            >
+                <path d$="{{analyzeSVG}}" stroke="#880000" stroke-width="3" fill="none"></path>
+            </svg>
+        </template>
+
+
     </template>
 
     <script>
@@ -56,6 +70,14 @@
                     button     : {
                         type              : Boolean,
                         reflectToAttribute: true
+                    },
+                    analyze    : {
+                        type              : Boolean,
+                        reflectToAttribute: true
+                    },
+                    analyzeSVG : {
+                        type  : String,
+                        notify: true,
                     }
                 };
             }
@@ -117,11 +139,13 @@
             initialSound (buffer, gain) {
                 this.soundSource = this.context.createBufferSource ();
                 this.soundGain = this.context.createGain ();
+                this.analyser = this.context.createAnalyser ();
 
                 this.soundSource.buffer = buffer;
                 this.soundGain.gain.value = gain;
 
-                this.soundGain.connect (this.context.destination);
+                this.analyser.connect (this.context.destination);
+                this.soundGain.connect (this.analyser);
                 this.soundSource.connect (this.soundGain);
 
                 this.soundSource.onended = (e) => {
@@ -135,11 +159,46 @@
 
                     this.initialSound (buffer, this.volume * 0.1);
                 };
+
+                this.analyser.fftSize = 128;
+                this.size = {
+                    width : 400,
+                    height: 256,
+                };
+            }
+
+            _drawSVG () {
+                const bufferLength = this.analyser.frequencyBinCount;
+
+                const update = () => {
+                    let data = new Uint8Array (bufferLength);
+
+                    this.analyser.getByteTimeDomainData (data);
+                    // this.analyser.getByteFrequencyData(data);
+
+                    let d = 'M';
+                    data.forEach ((y, i) => {
+                        const x = i * (this.size.width / bufferLength);
+                        d += `${x} ${y},`;
+                    });
+
+                    this.analyzeSVG = d;
+
+                    // 音が鳴っていたら再度呼び出し
+                    if (this.play === true) {
+                        window.requestAnimationFrame (update.bind (this));
+                    }
+                };
+
+                window.requestAnimationFrame (update.bind (this));
             }
 
             _observerPlay () {
                 if (this.play === true) {
                     this.soundSource.start (0);
+
+                    this._drawSVG ();
+
                 }
             }
 
