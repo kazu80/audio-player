@@ -1,0 +1,81 @@
+<link rel="import" href="../polymer/polymer-element.html">
+
+<dom-module id="audio-visible">
+    <template>
+        <style>
+        </style>
+    </template>
+    <script>
+        class AudioVisible extends Polymer.Element {
+            static get is () { return 'audio-visible'; }
+
+            static get properties () {
+                return {
+                    analyzeData: {
+                        type    : Array,
+                        notify  : true,
+                        observer: '_observerAnalyze',
+                    },
+                    width      : {
+                        type: Number,
+                    },
+                    type       : {
+                        type : String,
+                        value: 'circle'
+                    },
+                    distance   : {
+                        type : Number,
+                        value: 250,
+                    },
+
+                }
+            }
+
+            ready () {
+                super.ready ();
+
+                // point of origin
+                this.originX = 200;
+                this.originY = 350;
+
+                // start position
+                this.startPosition = 180;
+            }
+
+            _observerAnalyze (data) {
+                // shape of circle
+                const divide = 360 / (data.length - 1);
+
+                //
+                let d = 'M';
+
+                //
+                data.forEach ((y, i) => {
+                    const x = i * (this.width / data.length);
+
+                    //
+                    let angle = divide * i;
+
+                    // start position of circle
+                    angle = angle - this.startPosition;
+
+                    // position(x,y) of point
+                    const x2 = this.originX + this.distance * Math.cos (angle * (Math.PI / 180));
+                    const y2 = this.originY + this.distance * Math.sin (angle * (Math.PI / 180));
+
+                    // SVG
+                    switch (this.type) {
+                        case 'circle':
+                            d += `${x2} ${ (-0.5 * y) + y2},`;
+                            break;
+                        case 'line':
+                            d += `${x} ${y},`;
+                            break;
+                    }
+                });
+            }
+        }
+
+        window.customElements.define (AudioVisible.is, AudioVisible);
+    </script>
+</dom-module>
