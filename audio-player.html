@@ -21,7 +21,7 @@
                     xmlns="http://www.w3.org/2000/svg"
                     baseProfile="full"
             >
-                <path d$="{{analyzeSVG}}" stroke="#880000" stroke-width="3" fill="none"></path>
+                <path d$="{{analyzeSVG}}" stroke="#666" stroke-width="1" fill="none"></path>
             </svg>
         </template>
 
@@ -170,8 +170,8 @@
 
                 this.analyser.fftSize = this.fftSize;
                 this.size = {
-                    width : 400,
-                    height: 256,
+                    width : 1000,
+                    height: 400,
                 };
             }
 
@@ -181,13 +181,37 @@
                 const update = () => {
                     let data = new Uint8Array (bufferLength);
 
-                    this.analyser.getByteTimeDomainData (data);
-                    // this.analyser.getByteFrequencyData(data);
+                    //this.analyser.getByteTimeDomainData (data);
+                    this.analyser.getByteFrequencyData(data);
 
+
+                    // shape of circle
+                    const divide = 360 / (data.length - 1);
+
+                    //
                     let d = 'M';
+
+                    //
                     data.forEach ((y, i) => {
                         const x = i * (this.size.width / bufferLength);
-                        d += `${x} ${y},`;
+
+                        //
+                        let angle = divide * i;
+
+                        // scale of circle
+                        const distance = 250;
+
+                        // start position of circle
+                        angle = angle - 180;
+
+                        // position(x,y) of point
+                        const x2 = 200 + distance * Math.cos (angle * (Math.PI / 180));
+                        const y2 = 350 + distance * Math.sin (angle * (Math.PI / 180));
+
+
+                        // SVG
+                        //d += `${x} ${y},`;
+                        d += `${x2} ${ (-0.5 * y) + y2},`;
                     });
 
                     this.analyzeSVG = d;
