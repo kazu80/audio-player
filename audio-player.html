@@ -217,6 +217,9 @@
                     this.analyzeSVG = d;
                     this.analyzeData = data;
 
+                    // Fire Event
+                    this.dispatchEvent (new CustomEvent ('analyzed', {detail: {data: data}}));
+
                     if (this.play === true) {
                         window.requestAnimationFrame (update.bind (this));
                     }

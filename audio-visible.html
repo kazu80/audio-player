@@ -4,6 +4,15 @@
     <template>
         <style>
         </style>
+        <svg
+                ref="scope"
+                width$={{width}}
+                height$={{height}}
+                xmlns="http://www.w3.org/2000/svg"
+                baseProfile="full"
+        >
+            <path d$="{{analyzeSVG}}" stroke="#666" stroke-width="1" fill="none"></path>
+        </svg>
         <slot></slot>
     </template>
     <script>
@@ -12,19 +21,19 @@
 
             static get properties () {
                 return {
-                    analyzeData: {
-                        type    : Array,
-                        notify  : true,
-                        observer: '_observerAnalyze',
+                    width   : {
+                        type : Number,
+                        value: 400,
                     },
-                    width      : {
-                        type: Number,
+                    height  : {
+                        type : Number,
+                        value: 256,
                     },
-                    type       : {
+                    type    : {
                         type : String,
                         value: 'circle'
                     },
-                    distance   : {
+                    distance: {
                         type : Number,
                         value: 250,
                     },
@@ -41,8 +50,14 @@
                         .assignedNodes ({flatten: true})
                         .filter (n => n.nodeType === Node.ELEMENT_NODE);
 
-                console.log (this.audioElements[0].getAttribute ('analyzeData'));
-                this.analyzeData = this.audioElements[0].getAttribute ('analyzeData');
+                for (let i = 0; i < this.audioElements.length; i++) {
+                    const audio = this.audioElements[i];
+
+                    audio.addEventListener ('analyzed', (val) => {
+                        const analyzeData = val.detail.data;
+                        this._analyzeData2SVG (analyzeData);
+                    });
+                }
 
                 // point of origin
                 this.originX = 200;
@@ -52,9 +67,7 @@
                 this.startPosition = 180;
             }
 
-            _observerAnalyze (data) {
-                console.log ('a');
-
+            _analyzeData2SVG (data) {
                 // shape of circle
                 const divide = 360 / (data.length - 1);
 
@@ -85,6 +98,8 @@
                             break;
                     }
                 });
+
+                this.analyzeSVG = d;
             }
         }
 
