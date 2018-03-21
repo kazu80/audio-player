@@ -4,6 +4,7 @@
     <template>
         <style>
         </style>
+        <slot></slot>
     </template>
     <script>
         class AudioVisible extends Polymer.Element {
@@ -34,6 +35,15 @@
             ready () {
                 super.ready ();
 
+                this.audioElements =
+                    this.shadowRoot
+                        .querySelector ('slot')
+                        .assignedNodes ({flatten: true})
+                        .filter (n => n.nodeType === Node.ELEMENT_NODE);
+
+                console.log (this.audioElements[0].getAttribute ('analyzeData'));
+                this.analyzeData = this.audioElements[0].getAttribute ('analyzeData');
+
                 // point of origin
                 this.originX = 200;
                 this.originY = 350;
@@ -43,6 +53,8 @@
             }
 
             _observerAnalyze (data) {
+                console.log ('a');
+
                 // shape of circle
                 const divide = 360 / (data.length - 1);
 
