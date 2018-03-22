@@ -21,23 +21,34 @@
 
             static get properties () {
                 return {
-                    width   : {
+                    width        : {
                         type : Number,
                         value: 400,
                     },
-                    height  : {
+                    height       : {
                         type : Number,
                         value: 256,
                     },
-                    type    : {
+                    type         : {
                         type : String,
-                        value: 'circle'
+                        value: 'line'
                     },
-                    distance: {
+                    distance     : {
                         type : Number,
                         value: 250,
                     },
-
+                    originX      : {
+                        type : Number,
+                        value: 200,
+                    },
+                    originY      : {
+                        type : Number,
+                        value: 350,
+                    },
+                    startPosition: {
+                        type : Number,
+                        value: 180,
+                    }
                 }
             }
 
@@ -59,12 +70,8 @@
                     });
                 }
 
-                // point of origin
-                this.originX = 200;
-                this.originY = 350;
-
-                // start position
-                this.startPosition = 180;
+                const initialAnalyzeData = new Uint8Array (128);
+                this._analyzeData2SVG (initialAnalyzeData);
             }
 
             _analyzeData2SVG (data) {
@@ -78,23 +85,25 @@
                 data.forEach ((y, i) => {
                     const x = i * (this.width / data.length);
 
-                    //
-                    let angle = divide * i;
-
-                    // start position of circle
-                    angle = angle - this.startPosition;
-
-                    // position(x,y) of point
-                    const x2 = this.originX + this.distance * Math.cos (angle * (Math.PI / 180));
-                    const y2 = this.originY + this.distance * Math.sin (angle * (Math.PI / 180));
-
                     // SVG
                     switch (this.type) {
                         case 'circle':
+
+                            //
+                            let angle = divide * i;
+
+                            // start position of circle
+                            angle = angle - this.startPosition;
+
+                            // position(x,y) of point
+                            const x2 = this.originX + this.distance * Math.cos (angle * (Math.PI / 180));
+                            const y2 = this.originY + this.distance * Math.sin (angle * (Math.PI / 180));
+
                             d += `${x2} ${ (-0.5 * y) + y2},`;
                             break;
                         case 'line':
-                            d += `${x} ${y},`;
+
+                            d += `${x} ${ (-1 * y) + (this.height / 2) },`;
                             break;
                     }
                 });
