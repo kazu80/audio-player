@@ -3,6 +3,15 @@
 <dom-module id="audio-visible">
     <template>
         <style>
+            :host {
+                --audio-waveform_-_stroke-width: 1;
+                --audio-waveform_-_stroke: #666;
+            }
+
+            .waveform {
+                stroke-width : var(--audio-waveform_-_stroke-width);
+                stroke: var(--audio-waveform_-_stroke);
+            }
         </style>
         <svg
                 ref="scope"
@@ -11,7 +20,7 @@
                 xmlns="http://www.w3.org/2000/svg"
                 baseProfile="full"
         >
-            <path d$="{{analyzeSVG}}" stroke="#666" stroke-width="1" fill="none"></path>
+            <path class="waveform" d$="{{analyzeSVG}}" stroke="#666" stroke-width="1" fill="none"></path>
         </svg>
         <slot></slot>
     </template>
