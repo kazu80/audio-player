@@ -75,6 +75,8 @@
             ready () {
                 super.ready ();
 
+                this.played = false;
+
                 // Create Audio Context
                 window.AudioContext = window.AudioContext || window.webkitAudioContext;
                 const context = new AudioContext ();
@@ -108,7 +110,8 @@
                             const callback = (e) => {
                                 const param = AudioVisible.initialSound (context, buffer, gain, fftSize, callback);
                                 this.audioSources.splice(i, 1, param);
-                                this.soundPlay = "false";
+                                // this.soundPlay = "false";
+                                this.played = false;
                             };
 
                             // initial
@@ -133,9 +136,12 @@
             }
 
             _soundSelected(val, old) {
-                if (this.audioElements) {
+                if (this.played && this.audioElements) {
+                    console.log ('bar');
                     const audio = this.audioSources[old - 1];
                     audio.source.stop();
+                    this.soundPlay = 'false';
+                    this.played = false;
                 }
             }
 
@@ -145,7 +151,9 @@
 
                     if (val === "true") {
                         audio.source.start(0);
+                        this.played = true;
                     } else {
+                        console.log ('foo');
                         // audio.source.stop();
                     }
                 }
