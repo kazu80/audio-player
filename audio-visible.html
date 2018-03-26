@@ -64,20 +64,22 @@
             ready () {
                 super.ready ();
 
-                this.audioElements =
-                    this.shadowRoot
-                        .querySelector ('slot')
-                        .assignedNodes ({flatten: true})
-                        .filter (n => n.nodeType === Node.ELEMENT_NODE);
+                new Polymer.FlattenedNodesObserver(this.shadowRoot.querySelector('slot'), () => {
+                    this.audioElements =
+                        this.shadowRoot
+                            .querySelector ('slot')
+                            .assignedNodes ({flatten: true})
+                            .filter (n => n.nodeType === Node.ELEMENT_NODE);
 
-                for (let i = 0; i < this.audioElements.length; i++) {
-                    const audio = this.audioElements[i];
+                    for (let i = 0; i < this.audioElements.length; i++) {
+                        const audio = this.audioElements[i];
 
-                    audio.addEventListener ('analyzed', (val) => {
-                        const analyzeData = val.detail.data;
-                        this._analyzeData2SVG (analyzeData);
-                    });
-                }
+                        audio.addEventListener ('analyzed', (val) => {
+                            const analyzeData = val.detail.data;
+                            this._analyzeData2SVG (analyzeData);
+                        });
+                    }
+                });
 
                 const initialAnalyzeData = new Uint8Array (128);
                 this._analyzeData2SVG (initialAnalyzeData);
