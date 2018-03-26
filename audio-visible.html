@@ -57,6 +57,17 @@
                     startPosition: {
                         type : Number,
                         value: 180,
+                    },
+                    soundSelected: {
+                        type: Number,
+                        value: 1,
+                        observer: '_soundSelected'
+                    },
+                    soundPlay: {
+                        type: String,
+                        value: 'false',
+                        reflectToAttribute: true,
+                        observer: '_soundPlay'
                     }
                 }
             }
@@ -64,6 +75,11 @@
             ready () {
                 super.ready ();
 
+                // Create Audio Context
+                window.AudioContext = window.AudioContext || window.webkitAudioContext;
+                const context = new AudioContext ();
+
+                // Observer: Slot
                 new Polymer.FlattenedNodesObserver(this.shadowRoot.querySelector('slot'), () => {
                     this.audioElements =
                         this.shadowRoot
@@ -71,18 +87,126 @@
                             .assignedNodes ({flatten: true})
                             .filter (n => n.nodeType === Node.ELEMENT_NODE);
 
+                    // Selected sound source
+                    // const audio = this.audioElements[this.soundSelected - 1];
+                    // this.soundSRC = audio.getAttribute('src');
+
+                    // Initial
+                    this.audioSources = [];
                     for (let i = 0; i < this.audioElements.length; i++) {
                         const audio = this.audioElements[i];
+                        const src   = audio.getAttribute('src');
+                        const volume = audio.getAttribute('volume') || 5;
+                        const fftSize = audio.getAttribute('fft-size') || 512;
 
+                        this._loadBufferFromURL (context, src, (buffer) => {
+
+                            // gain
+                            const gain = volume * 0.1;
+
+                            // callback
+                            const callback = (e) => {
+                                const param = AudioVisible.initialSound (context, buffer, gain, fftSize, callback);
+                                this.audioSources.splice(i, 1, param);
+                                this.soundPlay = "false";
+                            };
+
+                            // initial
+                            const param = AudioVisible.initialSound (context, buffer, gain, fftSize, callback);
+
+                            // array
+                            this.audioSources.push(param);
+                        });
+
+                        /*
                         audio.addEventListener ('analyzed', (val) => {
                             const analyzeData = val.detail.data;
                             this._analyzeData2SVG (analyzeData);
                         });
+                        */
                     }
                 });
 
+                // for SVG
                 const initialAnalyzeData = new Uint8Array (128);
                 this._analyzeData2SVG (initialAnalyzeData);
+            }
+
+            _soundSelected(val, old) {
+                if (this.audioElements) {
+                    const audio = this.audioSources[old - 1];
+                    audio.source.stop();
+                }
+            }
+
+            _soundPlay(val) {
+                if (this.audioElements) {
+                    const audio = this.audioSources[this.soundSelected - 1];
+
+                    if (val === "true") {
+                        audio.source.start(0);
+                    } else {
+                        // audio.source.stop();
+                    }
+                }
+            }
+
+            static initialSound (context, buffer, gain, fftSize, cb) {
+                const soundSource = context.createBufferSource ();
+                const soundGain   = context.createGain ();
+                const analyser    = context.createAnalyser ();
+
+                soundSource.buffer = buffer;
+                soundGain.gain.value = gain;
+
+                analyser.connect (context.destination);
+                soundGain.connect (analyser);
+                soundSource.connect (soundGain);
+
+                soundSource.onended = cb;
+
+                analyser.fftSize = fftSize;
+
+                /*
+                this.size = {
+                    width : 1000,
+                    height: 400,
+                };
+                */
+
+                return {
+                    source: soundSource,
+                    gain: soundGain,
+                    analyser: analyser
+                }
+            }
+
+            _loadBufferFromURL (context, url, callback) {
+                const request = new XMLHttpRequest ();
+                request.open ('GET', url, true);
+                request.responseType = 'arraybuffer';
+
+                request.onload = () => {
+                    context.decodeAudioData (request.response,
+                                             function (buffer) {
+                                                 if (!buffer) {
+                                                     alert ('error decoding file data: ' + url);
+                                                     return;
+                                                 }
+
+                                                 callback (buffer);
+                                             },
+                                             function (error) {
+                                                 console.error ('decodeAudioData error', error);
+                                             }
+                    );
+                };
+
+                request.onerror = function (e) {
+                    console.error ('BufferLoader: XHR error:', e);
+                };
+
+                request.send ();
             }
 
             _analyzeData2SVG (data) {

@@ -46,11 +46,7 @@
                     soundSource: Object,
                     soundGain  : Object,
                     onend      : Object,
-                    src        : {
-                        type    : String,
-                        notify  : true,
-                        observer: '_observerSRC',
-                    },
+                    src        : String,
                     volume     : {
                         type : Number,
                         value: 5,
@@ -92,9 +88,6 @@
 
             constructor () {
                 super ();
-
-                window.AudioContext = window.AudioContext || window.webkitAudioContext;
-                this.context = new AudioContext ();
             }
 
             ready () {
@@ -102,17 +95,6 @@
 
                 this.addEventListener ('click', () => {
                     this._play ();
-                });
-
-            }
-
-            _observerSRC (src) {
-                if (!src) {
-                    return;
-                }
-
-                this._loadBufferFromURL (src, (buffer) => {
-                    this.initialSound (buffer, this.volume * 0.1);
                 });
             }
 
@@ -230,10 +212,16 @@
 
             _observerPlay () {
                 if (this.play === true) {
-                    this.soundSource.start (0);
+                    if (!this.soundSource) {
+                        this._loadBufferFromURL (this.src, (buffer) => {
+                            this.initialSound (buffer, this.volume * 0.1);
+                            this.soundSource.start (0);
+                        });
+                    } else {
+                        this.soundSource.start (0);
+                    }
 
-                    this._drawSVG ();
-
+                    // this._drawSVG ();
                 }
             }
 
@@ -246,6 +234,11 @@
             _play () {
                 if (this.play === false) {
                     this.play = true;
+
+                    if (!this.context) {
+                        window.AudioContext = window.AudioContext || window.webkitAudioContext;
+                        this.context = new AudioContext ();
+                    }
                 }
             }
 

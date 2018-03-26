@@ -36,10 +36,29 @@
                     --audio-waveform_-_stroke: #f00;
                 }
             </style>
-            <audio-visible class="analyze" type="circle">
-                <audio-player id="sound01" src="./sound.mp3" button></audio-player>
-                <audio-player id="sound02" src="./sound02.mp3" button></audio-player>
+            <audio-visible id="audio-visible" class="analyze" type="circle" sound-play="false" sound-selected="1">
+                <audio-player src="./sound.mp3"></audio-player>
+                <audio-player src="./sound02.mp3"></audio-player>
             </audio-visible>
+            <button id="btn1">1</button>
+            <button id="btn2">2</button>
+            <script>
+
+                const av = document.getElementById("audio-visible");
+
+                const btn1 = document.getElementById("btn1");
+                const btn2 = document.getElementById("btn2");
+                btn1.addEventListener("click", () => {
+                    av.setAttribute('sound-selected', '1');
+                    av.setAttribute('sound-play', 'true');
+                });
+                btn2.addEventListener("click", () => {
+                    av.setAttribute('sound-selected', '2');
+                    av.setAttribute('sound-play', 'true');
+                });
+
+
+            </script>
         </template>
     </demo-snippet>
 
