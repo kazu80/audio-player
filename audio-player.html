@@ -75,10 +75,6 @@
                         type  : String,
                         notify: true,
                     },
-                    analyzeData: {
-                        type  : Array,
-                        notify: true,
-                    },
                     fftSize    : {
                         type : Number,
                         value: 128,
@@ -163,41 +159,20 @@
                 const update = () => {
                     let data = new Uint8Array (bufferLength);
 
-                    //this.analyser.getByteTimeDomainData (data);
                     this.analyser.getByteFrequencyData(data);
-
-
-                    // shape of circle
-                    const divide = 360 / (data.length - 1);
 
                     //
                     let d = 'M';
 
-                    //
+                    // Create graph SVG
                     data.forEach ((y, i) => {
                         const x = i * (this.size.width / bufferLength);
 
-                        //
-                        let angle = divide * i;
-
-                        // scale of circle
-                        const distance = 250;
-
-                        // start position of circle
-                        angle = angle - 180;
-
-                        // position(x,y) of point
-                        const x2 = 200 + distance * Math.cos (angle * (Math.PI / 180));
-                        const y2 = 350 + distance * Math.sin (angle * (Math.PI / 180));
-
-
                         // SVG
-                        //d += `${x} ${y},`;
-                        d += `${x2} ${ (-0.5 * y) + y2},`;
+                        d += `${x} ${(-1 * (y / 2)) + (this.size.height / 2)},`;
                     });
 
                     this.analyzeSVG = d;
-                    this.analyzeData = data;
 
                     // Fire Event
                     this.dispatchEvent (new CustomEvent ('analyzed', {detail: {data: data}}));
@@ -215,13 +190,12 @@
                     if (!this.soundSource) {
                         this._loadBufferFromURL (this.src, (buffer) => {
                             this.initialSound (buffer, this.volume * 0.1);
+                            this._drawSVG();
                             this.soundSource.start (0);
                         });
                     } else {
                         this.soundSource.start (0);
                     }
-
-                    // this._drawSVG ();
                 }
             }
 
