@@ -212,6 +212,9 @@
                     if (!this.context) {
                         window.AudioContext = window.AudioContext || window.webkitAudioContext;
                         this.context = new AudioContext ();
+
+                        // for iOS
+                        this._silent ();
                     }
                 }
             }

@@ -35,7 +35,7 @@
             <button onclick="stop()">stop</button>
 
             <script>
-                const audio = document.querySelector ('#foo');
+                const audio = document.getElementById ('foo');
 
                 audio.ended = (e) => {
                     console.info ('Sound is over.');
@@ -68,7 +68,7 @@
                     --audio-waveform_-_stroke: #f00;
                 }
             </style>
-            <audio-visible id="audio-visible" class="analyze" type="circle" sound-play="false" sound-selected="1">
+            <audio-visible id="audio-visible-foo" class="analyze" type="circle" sound-play="false" sound-selected="1">
                 <audio-player src="./sound.mp3"></audio-player>
                 <audio-player src="./sound10.mp3"></audio-player>
                 <audio-player src="./sound03.wav"></audio-player>
@@ -90,7 +90,7 @@
             <button id="btn9">9</button>
             <script>
 
-                const av = document.getElementById("audio-visible");
+                const av = document.getElementById ('audio-visible-foo');
 
                 const btn1 = document.getElementById("btn1");
                 const btn2 = document.getElementById("btn2");
