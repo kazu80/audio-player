@@ -67,10 +67,10 @@
 
                 // Create Audio Context
                 window.AudioContext = window.AudioContext || window.webkitAudioContext;
-                const context = new AudioContext ();
+                this.context = new AudioContext ();
 
                 // for iOS
-                this._silent (context);
+                this._silent ();
 
                 // Observer: Slot
                 new Polymer.FlattenedNodesObserver(this.shadowRoot.querySelector('slot'), () => {
@@ -78,7 +78,7 @@
                         this.shadowRoot
                             .querySelector ('slot')
                             .assignedNodes ({flatten: true})
-                            .filter (n => n.nodeType === Node.ELEMENT_NODE);
+                            .filter (n => n.nodeName === 'AUDIO-PLAYER');
 
                     // Initial
                     this.audioSources = [];
@@ -88,7 +88,7 @@
                         const volume = audio.getAttribute('volume') || 5;
                         const fftSize = audio.getAttribute('fft-size') || 512;
 
-                        this._loadBufferFromURL (context, src, (buffer) => {
+                        this._loadBufferFromURL (this.context, src, (buffer) => {
                             // ID
                             const id = i + 1;
 
@@ -96,7 +96,7 @@
                             const gain = volume * 0.1;
 
                             // initial
-                            const param = this.initialSound (id, context, buffer, gain, fftSize, audio);
+                            const param = this.initialSound (id, this.context, buffer, gain, fftSize, audio);
 
                             // array
                             this.audioSources.push(param);
@@ -282,7 +282,8 @@
                 window.requestAnimationFrame (update.bind (this));
             }
 
-            _silent (context) {
+            _silent () {
+                const context = this.context;
                 const buf = context.createBuffer (1, 1, 22050);
                 const src = context.createBufferSource ();
                 src.buffer = buf;
