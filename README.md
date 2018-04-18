@@ -1,10 +1,13 @@
-[![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-blue.svg)](https://www.webcomponents.org/element/owner/my-element)
+[![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-blue.svg)](https://www.webcomponents.org/element/monkick/audio-player)
 
 # \<audio-player\>
 
 simple audio player.  
 This is playing with web audio api.  
 Just write the path to the sound file and you can play it.
+
+## Version
+1.6.0
 
 ## DEMO
 
