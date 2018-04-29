@@ -71,7 +71,16 @@
                         type              : Boolean,
                         reflectToAttribute: true
                     },
-                    analyzeSVG: {
+                    analyzeWidth: {
+                        type: Number,
+                        value: 375,
+                    },
+                    analyzeHeight: {
+                        type: Number,
+                        value: 400,
+                        notify  : true,
+                    },
+                    analyzeSVG : {
                         type  : String,
                         notify: true,
                     },
@@ -82,6 +91,25 @@
                     type      : {
                         type : String,
                         value: 'line'
+                    },
+                    bufferLength: {
+                        type: Number
+                    },
+                    startPosition: {
+                        type : Number,
+                        value: 180,
+                    },
+                    originX      : {
+                        type : Number,
+                        value: 200,
+                    },
+                    originY      : {
+                        type : Number,
+                        value: 350,
+                    },
+                    distance     : {
+                        type : Number,
+                        value: 250,
                     }
                 };
             }
@@ -142,6 +170,8 @@
                     this.play = false;
                     this.stop = false;
 
+                    this.dispatchEvent (new CustomEvent ('ended'));
+
                     // if set callback method
                     if (this.onend) {
                         this.onend (e);
@@ -151,14 +181,10 @@
                 };
 
                 this.analyser.fftSize = this.fftSize;
-                this.size = {
-                    width : 1000,
-                    height: 400,
-                };
             }
 
             _drawSVG () {
-                const bufferLength = this.analyser.frequencyBinCount;
+                const bufferLength = this.bufferLength || this.analyser.frequencyBinCount;
 
                 const update = () => {
                     let data = new Uint8Array (bufferLength);
@@ -166,12 +192,13 @@
                     this.analyser.getByteFrequencyData(data);
 
                     //
+                    const divide = 360 / (data.length - 1);
+
+                    //
                     let d = 'M';
 
                     // Create graph SVG
                     data.forEach ((y, i) => {
-                        const x = i * (this.size.width / bufferLength);
-
                         // SVG
                         switch (this.type) {
                             case 'circle':
@@ -189,18 +216,17 @@
                                 break;
 
                             case 'line':
-                                d += `${x} ${ (-1 * y) + (this.height / 2) },`;
+                                const x = i * (this.analyzeWidth / bufferLength);
+                                d += `${x} ${(-1 * (y / 2)) + (this.analyzeHeight / 2)},`;
                                 break;
                         }
-
-                        // SVG
-                        d += `${x} ${(-1 * (y / 2)) + (this.size.height / 2)},`;
                     });
 
                     this.analyzeSVG = d;
 
                     // Fire Event
                     this.dispatchEvent (new CustomEvent ('analyzed', {detail: {data: data}}));
+                    this.dispatchEvent (new CustomEvent ('analyzeSVG', {detail: {data: this.analyzeSVG}}));
 
                     if (this.play === true) {
                         window.requestAnimationFrame (update.bind (this));
@@ -212,15 +238,11 @@
 
             _observerPlay () {
                 if (this.play === true) {
-                    if (!this.soundSource) {
-                        this._loadBufferFromURL (this.src, (buffer) => {
-                            this.initialSound (buffer, this.volume * 0.1);
-                            this._drawSVG();
-                            this.soundSource.start (0);
-                        });
-                    } else {
+                    this._loadBufferFromURL (this.src, (buffer) => {
+                        this.initialSound (buffer, this.volume * 0.1);
+                        this._drawSVG();
                         this.soundSource.start (0);
-                    }
+                    });
                 }
             }
 
