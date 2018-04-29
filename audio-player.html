@@ -43,56 +43,56 @@
             static get properties () {
                 return {
                     context    : Object,
-                    soundSource: Object,
-                    soundGain  : Object,
-                    onend      : Object,
-                    src        : String,
-                    volume     : {
+                    soundSource  : Object,
+                    soundGain    : Object,
+                    onend        : Object,
+                    src          : String,
+                    volume       : {
                         type : Number,
                         value: 5,
                     },
-                    play       : {
+                    play         : {
                         type    : Boolean,
                         value   : false,
                         notify  : true,
                         observer: '_observerPlay',
                     },
-                    stop       : {
+                    stop         : {
                         type    : Boolean,
                         value   : false,
                         notify  : true,
                         observer: '_observerStop',
                     },
-                    button    : {
+                    button       : {
                         type              : Boolean,
                         reflectToAttribute: true
                     },
-                    analyze   : {
+                    analyze      : {
                         type              : Boolean,
                         reflectToAttribute: true
                     },
-                    analyzeWidth: {
-                        type: Number,
+                    analyzeWidth : {
+                        type : Number,
                         value: 375,
                     },
                     analyzeHeight: {
-                        type: Number,
-                        value: 400,
-                        notify  : true,
+                        type  : Number,
+                        value : 400,
+                        notify: true,
                     },
-                    analyzeSVG : {
+                    analyzeSVG   : {
                         type  : String,
                         notify: true,
                     },
-                    fftSize   : {
+                    fftSize      : {
                         type : Number,
                         value: 128,
                     },
-                    type      : {
+                    type         : {
                         type : String,
                         value: 'line'
                     },
-                    bufferLength: {
+                    bufferLength : {
                         type: Number
                     },
                     startPosition: {
@@ -240,7 +240,7 @@
                 if (this.play === true) {
                     this._loadBufferFromURL (this.src, (buffer) => {
                         this.initialSound (buffer, this.volume * 0.1);
-                        this._drawSVG();
+                        this._drawSVG ();
                         this.soundSource.start (0);
                     });
                 }
