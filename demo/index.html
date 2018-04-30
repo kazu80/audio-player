@@ -55,7 +55,14 @@
     <h3>Analyze audio-player demo</h3>
     <demo-snippet>
         <template>
-            <audio-player id="analyze" src="./sound02.mp3" type="circle" button analyze fft-size="512"></audio-player>
+            <audio-player id="analyze" src="./sound02.mp3" type="line" button analyze fft-size="512"></audio-player>
+        </template>
+    </demo-snippet>
+
+    <h3>Analyze audio-player circle demo</h3>
+    <demo-snippet>
+        <template>
+            <audio-player id="analyze2" src="./sound02.mp3" type="circle" button analyze fft-size="512" distance="500" origin-y="600"></audio-player>
         </template>
     </demo-snippet>
 
