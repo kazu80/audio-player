@@ -57,7 +57,9 @@ Next. Add the `audio-player` custom tag in body.
 ## Parameter
 
 * `control`: appear control ui.
-* `analyze`: appear svg of analyze to sound. 
+* `analyze`: appear svg of analyze to sound.
+* `type`: form of analyze svg. set to `line` or `circle`.
+
 
 ## Method
 
