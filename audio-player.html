@@ -122,6 +122,15 @@
             ready () {
                 super.ready ();
 
+                this._setEvent ();
+
+                // initial analyze SVG data
+                const dataWave = new Uint8Array (256);
+                this._drawSVG (256, dataWave);
+                this._eventSVG ();
+            }
+
+            _setEvent () {
                 this.addEventListener ('click', () => {
                     this._play ();
                 });
@@ -182,52 +191,33 @@
                 };
 
                 this.analyser.fftSize = this.fftSize;
+
+                // get buffer length for analyze
+                this.bufferLength = this.bufferLength || this.analyser.frequencyBinCount;
+
+                // create unit array for analyze
+                this.dataWave = new Uint8Array (this.bufferLength);
+
+                // SVG
+                this._drawSVG (this.bufferLength, this.dataWave);
+
+                // Fire Event
+                this._eventSVG ();
             }
 
-            _drawSVG () {
-                const bufferLength = this.bufferLength || this.analyser.frequencyBinCount;
-
+            /**
+             * Render of wave at Request Animation Frame
+             * @private
+             */
+            _renderWave () {
                 const update = () => {
-                    let data = new Uint8Array (bufferLength);
+                    this.analyser.getByteFrequencyData (this.dataWave);
 
-                    this.analyser.getByteFrequencyData(data);
-
-                    //
-                    const divide = 360 / (data.length - 1);
-
-                    //
-                    let d = 'M';
-
-                    // Create graph SVG
-                    data.forEach ((y, i) => {
-                        // SVG
-                        switch (this.type) {
-                            case 'circle':
-                                //
-                                let angle = divide * i;
-
-                                // start position of circle
-                                angle = angle - this.startPosition;
-
-                                // position(x,y) of point
-                                const x2 = this.originX + this.distance * Math.cos (angle * (Math.PI / 180));
-                                const y2 = this.originY + this.distance * Math.sin (angle * (Math.PI / 180));
-
-                                d += `${x2} ${ (-0.5 * y) + y2},`;
-                                break;
-
-                            case 'line':
-                                const x = i * (this.analyzeWidth / bufferLength);
-                                d += `${x} ${(-1 * (y / 2)) + (this.analyzeHeight / 2)},`;
-                                break;
-                        }
-                    });
-
-                    this.analyzeSVG = d;
+                    // SVG
+                    this._drawSVG (this.bufferLength, this.dataWave);
 
                     // Fire Event
-                    this.dispatchEvent (new CustomEvent ('analyzed', {detail: {data: data}}));
-                    this.dispatchEvent (new CustomEvent ('analyzeSVG', {detail: {data: this.analyzeSVG}}));
+                    this._eventSVG ();
 
                     if (this.play === true) {
                         window.requestAnimationFrame (update.bind (this));
@@ -237,11 +227,60 @@
                 window.requestAnimationFrame (update.bind (this));
             }
 
+            /**
+             * Fire Event for rendering wave
+             * @private
+             */
+            _eventSVG () {
+                this.dispatchEvent (new CustomEvent ('analyzed', {detail: {data: this.dataWave}}));
+                this.dispatchEvent (new CustomEvent ('analyzeSVG', {detail: {data: this.analyzeSVG}}));
+            }
+
+            /**
+             * Make SVG data
+             * @param bufferLength
+             * @param data
+             * @private
+             */
+            _drawSVG (bufferLength, data) {
+                const divide = 360 / (data.length - 1);
+
+                // SVG
+                let d = 'M';
+
+                // Create graph SVG
+                data.forEach ((y, i) => {
+                    // SVG
+                    switch (this.type) {
+                        case 'circle':
+                            //
+                            let angle = divide * i;
+
+                            // start position of circle
+                            angle = angle - this.startPosition;
+
+                            // position(x,y) of point
+                            const x2 = this.originX + this.distance * Math.cos (angle * (Math.PI / 180));
+                            const y2 = this.originY + this.distance * Math.sin (angle * (Math.PI / 180));
+
+                            d += `${x2} ${ (-0.5 * y) + y2},`;
+                            break;
+
+                        case 'line':
+                            const x = i * (this.analyzeWidth / bufferLength);
+                            d += `${x} ${(-1 * (y / 2)) + (this.analyzeHeight / 2)},`;
+                            break;
+                    }
+                });
+
+                this.analyzeSVG = d;
+            }
+
             _observerPlay () {
                 if (this.play === true) {
                     this._loadBufferFromURL (this.src, (buffer) => {
                         this.initialSound (buffer, this.volume * 0.1);
-                        this._drawSVG ();
+                        this._renderWave ();
                         this.soundSource.start (0);
                     });
                 }
