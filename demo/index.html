@@ -62,7 +62,24 @@
     <h3>Analyze audio-player circle demo</h3>
     <demo-snippet>
         <template>
-            <audio-player id="analyze2" src="./sound02.mp3" type="circle" button analyze fft-size="512" distance="500" origin-y="600"></audio-player>
+            <svg
+                    ref="scope"
+                    width="400"
+                    height="256"
+                    xmlns="http://www.w3.org/2000/svg"
+                    baseProfile="full"
+            >
+                <path id="path" d="" stroke="#666" stroke-width="1" fill="none"></path>
+            </svg>
+            <audio-player id="analyze2" src="./sound02.mp3" type="circle" button fft-size="512" distance="500" origin-y="600"></audio-player>
+            <script>
+                const analyze = document.getElementById ('analyze2');
+                const path = document.getElementById ('path');
+
+                analyze.addEventListener ('analyzeSVG', (res) => {
+                    path.setAttribute ('d', res.detail.data);
+                });
+            </script>
         </template>
     </demo-snippet>
 
