@@ -5,9 +5,15 @@
     <template>
         <style>
             :host {
-                display : block;
+                background-color : #f8c555;
+                color            : #000000;
+
+                width            : 100%;
+                height           : 100%;
             }
         </style>
+
+        <div id="message">Hey Guys!!!</div>
     </template>
 
     <script>
@@ -24,12 +30,18 @@
 
             constructor () {
                 super ();
+
+                console.log ('constructor', this);
+            }
+
+            ready () {
+                console.log ('ready!', this);
             }
 
             connectedCallback () {
                 super.connectedCallback ();
 
-                console.log ('connectedCallback');
+                console.log ('connectedCallback', this);
             }
 
             disconnectedCallback () {
@@ -42,285 +54,6 @@
                 super.attributeChangedCallback ();
 
                 console.log ('attributeChangedCallback');
-            }
-
-            static get properties () {
-                return {
-                    context      : Object,
-                    soundSource  : Object,
-                    soundGain    : Object,
-                    onend        : Object,
-                    src          : String,
-                    volume       : {
-                        type : Number,
-                        value: 5,
-                    },
-                    play         : {
-                        type    : Boolean,
-                        value   : false,
-                        notify  : true,
-                        observer: '_observerPlay',
-                    },
-                    stop         : {
-                        type    : Boolean,
-                        value   : false,
-                        notify  : true,
-                        observer: '_observerStop',
-                    },
-                    button       : {
-                        type              : Boolean,
-                        reflectToAttribute: true
-                    },
-                    analyze      : {
-                        type              : Boolean,
-                        reflectToAttribute: true
-                    },
-                    analyzeWidth : {
-                        type : Number,
-                        value: 375,
-                    },
-                    analyzeHeight: {
-                        type  : Number,
-                        value : 400,
-                        notify: true,
-                    },
-                    analyzeSVG   : {
-                        type              : String,
-                        notify            : true,
-                        reflectToAttribute: true
-                    },
-                    fftSize      : {
-                        type : Number,
-                        value: 128,
-                    },
-                    type         : {
-                        type : String,
-                        value: 'line'
-                    },
-                    bufferLength : {
-                        type: Number
-                    },
-                    startPosition: {
-                        type : Number,
-                        value: 180,
-                    },
-                    originX      : {
-                        type : Number,
-                        value: 200,
-                    },
-                    originY      : {
-                        type : Number,
-                        value: 350,
-                    },
-                    distance     : {
-                        type : Number,
-                        value: 250,
-                    }
-                };
-            }
-
-            ready () {
-                /*
-                super.ready ();
-
-                this._setEvent ();
-
-                // initial analyze SVG data
-                const dataWave = new Uint8Array (256);
-                this._drawSVG (256, dataWave);
-                this._eventSVG ();
-                */
-            }
-
-            _setEvent () {
-                this.addEventListener ('click', () => {
-                    this._play ();
-                });
-            }
-
-            _loadBufferFromURL (url, callback) {
-                const request = new XMLHttpRequest ();
-                request.open ('GET', url, true);
-                request.responseType = 'arraybuffer';
-
-                request.onload = () => {
-                    this.context.decodeAudioData (request.response,
-                                                  function (buffer) {
-                                                      if (!buffer) {
-                                                          alert ('error decoding file data: ' + url);
-                                                          return;
-                                                      }
-
-                                                      callback (buffer);
-                                                  },
-                                                  function (error) {
-                                                      console.error ('decodeAudioData error', error);
-                                                  }
-                    );
-                };
-
-                request.onerror = function (e) {
-                    console.error ('BufferLoader: XHR error:', e);
-                };
-
-                request.send ();
-            }
-
-            initialSound (buffer, gain) {
-                this.soundSource = this.context.createBufferSource ();
-                this.soundGain = this.context.createGain ();
-                this.analyser = this.context.createAnalyser ();
-
-                this.soundSource.buffer = buffer;
-                this.soundGain.gain.value = gain;
-
-                this.analyser.connect (this.context.destination);
-                this.soundGain.connect (this.analyser);
-                this.soundSource.connect (this.soundGain);
-
-                this.soundSource.onended = (e) => {
-                    this.play = false;
-                    this.stop = false;
-
-                    this.dispatchEvent (new CustomEvent ('ended'));
-
-                    // if set callback method
-                    if (this.onend) {
-                        this.onend (e);
-                    }
-
-                    this.initialSound (buffer, this.volume * 0.1);
-                };
-
-                this.analyser.fftSize = this.fftSize;
-
-                // get buffer length for analyze
-                this.bufferLength = this.bufferLength || this.analyser.frequencyBinCount;
-
-                // create unit array for analyze
-                this.dataWave = new Uint8Array (this.bufferLength);
-
-                // SVG
-                this._drawSVG (this.bufferLength, this.dataWave);
-
-                // Fire Event
-                this._eventSVG ();
-            }
-
-            /**
-             * Render of wave at Request Animation Frame
-             * @private
-             */
-            _renderWave () {
-                const update = () => {
-                    this.analyser.getByteFrequencyData (this.dataWave);
-
-                    // SVG
-                    this._drawSVG (this.bufferLength, this.dataWave);
-
-                    // Fire Event
-                    this._eventSVG ();
-
-                    if (this.play === true) {
-                        window.requestAnimationFrame (update.bind (this));
-                    }
-                };
-
-                window.requestAnimationFrame (update.bind (this));
-            }
-
-            /**
-             * Fire Event for rendering wave
-             * @private
-             */
-            _eventSVG () {
-                this.dispatchEvent (new CustomEvent ('analyzed', {detail: {data: this.dataWave}}));
-                this.dispatchEvent (new CustomEvent ('analyzeSVG', {detail: {data: this.analyzeSVG}}));
-            }
-
-            /**
-             * Make SVG data
-             * @param bufferLength
-             * @param data
-             * @private
-             */
-            _drawSVG (bufferLength, data) {
-                const divide = 360 / (data.length - 1);
-
-                // SVG
-                let d = 'M';
-
-                // Create graph SVG
-                data.forEach ((y, i) => {
-                    // SVG
-                    switch (this.type) {
-                        case 'circle':
-                            //
-                            let angle = divide * i;
-
-                            // start position of circle
-                            angle = angle - this.startPosition;
-
-                            // position(x,y) of point
-                            const x2 = this.originX + this.distance * Math.cos (angle * (Math.PI / 180));
-                            const y2 = this.originY + this.distance * Math.sin (angle * (Math.PI / 180));
-
-                            d += `${x2} ${ (-0.5 * y) + y2},`;
-                            break;
-
-                        case 'line':
-                            const x = i * (this.analyzeWidth / bufferLength);
-                            d += `${x} ${(-1 * (y / 2)) + (this.analyzeHeight / 2)},`;
-                            break;
-                    }
-                });
-
-                this.analyzeSVG = d;
-            }
-
-            _observerPlay () {
-                if (this.play === true) {
-                    this._loadBufferFromURL (this.src, (buffer) => {
-                        this.initialSound (buffer, this.volume * 0.1);
-                        this._renderWave ();
-                        this.soundSource.start (0);
-                    });
-                }
-            }
-
-            _observerStop (val) {
-                if (this.stop === true) {
-                    this.soundSource.stop ();
-                }
-            }
-
-            _play () {
-                if (this.play === false) {
-                    this.play = true;
-
-                    if (!this.context) {
-                        window.AudioContext = window.AudioContext || window.webkitAudioContext;
-                        this.context = new AudioContext ();
-
-                        // for iOS
-                        this._silent ();
-                    }
-                }
-            }
-
-            _stop () {
-                if (this.play === true) {
-                    this.stop = true;
-                }
-            }
-
-            _silent () {
-                const context = this.context;
-                const buf = context.createBuffer (1, 1, 22050);
-                const src = context.createBufferSource ();
-                src.buffer = buf;
-                src.connect (context.destination);
-                src.start (0);
             }
         }
 
