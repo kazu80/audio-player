@@ -21,36 +21,7 @@
 </head>
 <body>
 <div class="vertical-section-container centered">
-    <h3>2.0</h3>
-    <demo-snippet>
-        <template>
-            <audio-content id="bar"></audio-content>
-            <script>
-                const bar = document.getElementById ('bar');
-                const baz = bar.parentElement;
 
-                setTimeout (() => {
-                    bar.style.display = 'none';
-                    console.log ('vanished!');
-                }, 1000);
-
-                setTimeout (() => {
-                    bar.style.display = 'block';
-                    console.log ('exist!');
-                }, 2000);
-
-                setTimeout (() => {
-                    bar.parentElement.removeChild (bar);
-                    console.log ('deleted!');
-                }, 3000);
-
-                setTimeout (() => {
-                    baz.appendChild (bar);
-                    console.log ('append!');
-                }, 4000);
-            </script>
-        </template>
-    </demo-snippet>
 
     <h3>Basic audio-player demo</h3>
     <demo-snippet>
@@ -167,6 +138,9 @@
                 btn8.addEventListener("click", () => {av._play(8)});
                 btn9.addEventListener("click", () => {av._play(9)});
 
+                av.addEventListener ('ended', () => {
+                    console.log ('ended!!');
+                });
 
             </script>
         </template>

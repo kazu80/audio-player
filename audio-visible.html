@@ -179,6 +179,8 @@
                     const param = this.initialSound (id, context, buffer, gain, fftSize, audio);
                     this.audioSources.splice(id - 1, 1, param);
 
+                    this.dispatchEvent (new CustomEvent ('ended', {detail: {id: id}}));
+
                     this.soundPlay = "false";
                     this.played = false;
                     audio.setAttribute('sound-play', 'false');
