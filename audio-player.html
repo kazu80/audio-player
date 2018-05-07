@@ -313,6 +313,11 @@
             }
 
             _silent() {
+                if (!this.context) {
+                    window.AudioContext = window.AudioContext || window.webkitAudioContext;
+                    this.context = new AudioContext ();
+                }
+
                 const context = this.context;
                 const buf = context.createBuffer(1, 1, 22050);
                 const src = context.createBufferSource();
