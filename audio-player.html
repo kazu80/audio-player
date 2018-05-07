@@ -243,7 +243,8 @@
              * @private
              */
             _drawSVG (bufferLength, data) {
-                const divide = 360 / (data.length - 1);
+                // wave width for circle
+                const divide = this.analyzeWidth / (data.length - 1);
 
                 // SVG
                 let d = 'M';

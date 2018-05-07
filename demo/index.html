@@ -21,7 +21,36 @@
 </head>
 <body>
 <div class="vertical-section-container centered">
+    <h3>2.0</h3>
+    <demo-snippet>
+        <template>
+            <audio-content id="bar"></audio-content>
+            <script>
+                const bar = document.getElementById ('bar');
+                const baz = bar.parentElement;
 
+                setTimeout (() => {
+                    bar.style.display = 'none';
+                    console.log ('vanished!');
+                }, 1000);
+
+                setTimeout (() => {
+                    bar.style.display = 'block';
+                    console.log ('exist!');
+                }, 2000);
+
+                setTimeout (() => {
+                    bar.parentElement.removeChild (bar);
+                    console.log ('deleted!');
+                }, 3000);
+
+                setTimeout (() => {
+                    baz.appendChild (bar);
+                    console.log ('append!');
+                }, 4000);
+            </script>
+        </template>
+    </demo-snippet>
 
     <h3>Basic audio-player demo</h3>
     <demo-snippet>
@@ -67,14 +96,28 @@
         <template>
             <svg
                     ref="scope"
-                    width="400"
-                    height="256"
+                    width="560"
+                    height="200"
                     xmlns="http://www.w3.org/2000/svg"
                     baseProfile="full"
             >
                 <path id="path" d="" stroke="#666" stroke-width="1" fill="none"></path>
             </svg>
-            <audio-player id="analyze2" src="./sound02.mp3" type="circle" button fft-size="512" distance="500" origin-y="600"></audio-player>
+
+            <!--
+            start-position: angle of wave start position.
+            analyze-width: width of analyze data.
+            distance: radius of circle
+            origin-x: position x of circle center
+            origin-y: position y of circle center
+            -->
+            <audio-player id="analyze2" src="./sound02.mp3" type="circle" button
+                          fft-size="1024"
+                          start-position="135"
+                          analyze-width="90"
+                          distance="250"
+                          origin-x="280"
+                          origin-y="350"></audio-player>
             <script>
                 const analyze = document.getElementById ('analyze2');
                 const path = document.getElementById ('path');
