@@ -118,6 +118,10 @@
                 // for SVG
                 const initialAnalyzeData = new Uint8Array (128);
                 this._analyzeData2SVG (initialAnalyzeData);
+
+                // Playing
+                this.playing = null;
+                this.sounding = null;
             }
 
             _play(selected) {
@@ -130,10 +134,20 @@
                     const audio = this.audioSources[selected - 1];
                     const element = this.audioElements[selected - 1];
                     this.isPlay = element.getAttribute('sound-play') === 'true';
+                    this.playing = element;
 
                     if (!this.isPlay) {
                         audio.source.start(0);
+
+                        this.sounding = audio;
+
+                        // set Attribute
                         element.setAttribute('sound-play', 'true');
+
+                        // fire event
+                        this.dispatchEvent (new CustomEvent ('started', {detail: {id: selected}}));
+
+                        this.audioElements.splice(selected - 1, 1, element);
                         this.isPlay = true;
                         this._drawSVG(audio.analyser);
                     }
@@ -149,14 +163,22 @@
                 if (this.audioElements) {
                     if (selected > this.audioElements.length) return console.warn('you need add less than sounds count');
 
-                    const audio = this.audioSources[selected - 1];
                     const element = this.audioElements[selected - 1];
-                    this.isPlay = element.getAttribute('sound-play') === 'true';
+
+                    this.isPlay = !!this.playing;
 
                     if (this.isPlay) {
-                        audio.source.stop();
+                        // stop sounds
+                        this.sounding.source.stop();
+
+                        // set Attribute
                         element.setAttribute('sound-play', 'false');
                         this.isPlay = false;
+
+                        this.playing = null;
+                        this.sounding = null;
+
+                        this.dispatchEvent (new CustomEvent ('ended', {detail: {id: selected}}));
                     }
                 } else {
                     return console.warn('not prepare sounds');
