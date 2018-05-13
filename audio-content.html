@@ -75,6 +75,47 @@
                 this.isPlay = true;
             }
 
+            initialSound (buffer, gain) {
+                this.soundSource = this.context.createBufferSource ();
+                this.soundGain = this.context.createGain ();
+                this.analyser = this.context.createAnalyser ();
+
+                this.soundSource.buffer = buffer;
+                this.soundGain.gain.value = gain;
+
+                this.analyser.connect (this.context.destination);
+                this.soundGain.connect (this.analyser);
+                this.soundSource.connect (this.soundGain);
+
+                this.soundSource.onended = (e) => {
+                    this.play = false;
+                    this.stop = false;
+
+                    this.dispatchEvent (new CustomEvent ('ended'));
+
+                    // if set callback method
+                    if (this.onend) {
+                        this.onend (e);
+                    }
+
+                    this.initialSound (buffer, this.volume * 0.1);
+                };
+
+                this.analyser.fftSize = this.fftSize;
+
+                // get buffer length for analyze
+                this.bufferLength = this.bufferLength || this.analyser.frequencyBinCount;
+
+                // create unit array for analyze
+                this.dataWave = new Uint8Array (this.bufferLength);
+
+                // SVG
+                this._drawSVG (this.bufferLength, this.dataWave);
+
+                // Fire Event
+                this._eventSVG ();
+            }
+
             /**
              * Create Audio Context
              * @private
