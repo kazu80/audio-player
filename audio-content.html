@@ -55,6 +55,34 @@
 
                 console.log ('attributeChangedCallback');
             }
+
+            /**
+             * Play
+             */
+            play () {
+                // Validation
+                if (this.isPlay === true) {
+                    console.warn ('Did not play: now playing.');
+                    return;
+                }
+
+                // Create Audio Context
+                if (!this.context) {
+                    this.context = AudioContent._createAudioContext ();
+                }
+
+                // play
+                this.isPlay = true;
+            }
+
+            /**
+             * Create Audio Context
+             * @private
+             */
+            static _createAudioContext () {
+                window.AudioContext = window.AudioContext || window.webkitAudioContext;
+                return new AudioContext ();
+            }
         }
 
         window.customElements.define (AudioContent.is, AudioContent);
