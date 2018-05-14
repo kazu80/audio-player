@@ -35,6 +35,13 @@
             }
 
             ready () {
+                super.ready ();
+
+                this.context = null;
+                this.soundSource = null;
+                this.soundGain = null;
+                this.analyser = null;
+
                 console.log ('ready!', this);
             }
 
