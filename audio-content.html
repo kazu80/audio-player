@@ -42,6 +42,12 @@
                 this.soundGain = null;
                 this.analyser = null;
 
+                this.audioElements = [];
+                this.audioSources = [];
+
+                this.playing = false;
+
+
                 console.log ('ready!', this);
             }
 
@@ -66,6 +72,45 @@
             /**
              * Play
              */
+            _play (selected) {
+                if (!selected) {
+                    return console.warn ('you need add selected number');
+                }
+                if (selected < 1) {
+                    return console.warn ('you need add more than 1');
+                }
+
+                if (this.audioElements) {
+                    if (selected > this.audioElements.length) {
+                        return console.warn (
+                            'you need add less than sounds count');
+                    }
+
+                    const audio = this.audioSources[selected - 1];
+                    const element = this.audioElements[selected - 1];
+                    this.isPlay = element.getAttribute ('sound-play') === 'true';
+                    this.playing = element;
+
+                    if (!this.isPlay) {
+                        audio.source.start (0);
+
+                        this.sounding = audio;
+
+                        // set Attribute
+                        element.setAttribute ('sound-play', 'true');
+
+                        // fire event
+                        this.dispatchEvent (new CustomEvent ('started', {detail: {id: selected}}));
+
+                        this.audioElements.splice (selected - 1, 1, element);
+                        this.isPlay = true;
+                        this._drawSVG (audio.analyser);
+                    }
+                } else {
+                    return console.warn ('not prepare sounds');
+                }
+            }
+
             play () {
                 // Validation
                 if (this.isPlay === true) {
