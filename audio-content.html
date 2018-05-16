@@ -127,6 +127,28 @@
                 this.isPlay = true;
             }
 
+            _drawSVG (analyser) {
+                const bufferLength = analyser.frequencyBinCount;
+
+                const update = () => {
+                    let data = new Uint8Array (bufferLength);
+
+                    analyser.getByteFrequencyData (data);
+
+                    this._analyzeData2SVG (data);
+
+                    if (this.isPlay === true) {
+                        window.requestAnimationFrame (update.bind (this));
+                    } else {
+                        // rendering initial SVG
+                        const initialAnalyzeData = new Uint8Array (128);
+                        this._analyzeData2SVG (initialAnalyzeData);
+                    }
+                };
+
+                window.requestAnimationFrame (update.bind (this));
+            }
+
             initialSound (buffer, gain) {
                 this.soundSource = this.context.createBufferSource ();
                 this.soundGain = this.context.createGain ();
