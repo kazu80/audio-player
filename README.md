@@ -7,7 +7,7 @@ This is playing with web audio api.
 Just write the path to the sound file and you can play it.
 
 ## Version
-1.7.3
+1.8.0
 
 ## DEMO
 
@@ -59,6 +59,7 @@ Next. Add the `audio-player` custom tag in body.
 * `control`: appear control ui.
 * `analyze`: appear svg of analyze to sound.
 * `type`: form of analyze svg. set to `line` or `circle`.
+* `loop`: can loop play.
 
 
 ## Method
