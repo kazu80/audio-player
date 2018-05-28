@@ -35,6 +35,20 @@
             }
 
             ready () {
+                super.ready ();
+
+                this.context = null;
+                this.soundSource = null;
+                this.soundGain = null;
+                this.analyser = null;
+
+                this.audioElements = [];
+                this.audioSources = [];
+
+                this.isPlay = false;
+                this.playing = null;
+
+
                 console.log ('ready!', this);
             }
 
@@ -54,6 +68,136 @@
                 super.attributeChangedCallback ();
 
                 console.log ('attributeChangedCallback');
+            }
+
+            /**
+             * Play
+             */
+            _play (selected) {
+                if (!selected) {
+                    return console.warn ('you need add selected number');
+                }
+                if (selected < 1) {
+                    return console.warn ('you need add more than 1');
+                }
+
+                if (this.audioElements) {
+                    if (selected > this.audioElements.length) {
+                        return console.warn (
+                            'you need add less than sounds count');
+                    }
+
+                    const audio = this.audioSources[selected - 1];
+                    const element = this.audioElements[selected - 1];
+                    this.isPlay = element.getAttribute ('sound-play') === 'true';
+                    this.playing = element;
+
+                    if (!this.isPlay) {
+                        audio.source.start (0);
+
+                        this.sounding = audio;
+
+                        // set Attribute
+                        element.setAttribute ('sound-play', 'true');
+
+                        // fire event
+                        this.dispatchEvent (new CustomEvent ('started', {detail: {id: selected}}));
+
+                        this.audioElements.splice (selected - 1, 1, element);
+                        this.isPlay = true;
+                        this._drawSVG (audio.analyser);
+                    }
+                } else {
+                    return console.warn ('not prepare sounds');
+                }
+            }
+
+            play () {
+                // Validation
+                if (this.isPlay === true) {
+                    console.warn ('Did not play: now playing.');
+                    return;
+                }
+
+                // Create Audio Context
+                if (!this.context) {
+                    this.context = AudioContent._createAudioContext ();
+                }
+
+                // play
+                this.isPlay = true;
+            }
+
+            _drawSVG (analyser) {
+                const bufferLength = analyser.frequencyBinCount;
+
+                const update = () => {
+                    let data = new Uint8Array (bufferLength);
+
+                    analyser.getByteFrequencyData (data);
+
+                    this._analyzeData2SVG (data);
+
+                    if (this.isPlay === true) {
+                        window.requestAnimationFrame (update.bind (this));
+                    } else {
+                        // rendering initial SVG
+                        const initialAnalyzeData = new Uint8Array (128);
+                        this._analyzeData2SVG (initialAnalyzeData);
+                    }
+                };
+
+                window.requestAnimationFrame (update.bind (this));
+            }
+
+            initialSound (buffer, gain) {
+                this.soundSource = this.context.createBufferSource ();
+                this.soundGain = this.context.createGain ();
+                this.analyser = this.context.createAnalyser ();
+
+                this.soundSource.buffer = buffer;
+                this.soundGain.gain.value = gain;
+
+                this.analyser.connect (this.context.destination);
+                this.soundGain.connect (this.analyser);
+                this.soundSource.connect (this.soundGain);
+
+                this.soundSource.onended = (e) => {
+                    this.play = false;
+                    this.stop = false;
+
+                    this.dispatchEvent (new CustomEvent ('ended'));
+
+                    // if set callback method
+                    if (this.onend) {
+                        this.onend (e);
+                    }
+
+                    this.initialSound (buffer, this.volume * 0.1);
+                };
+
+                this.analyser.fftSize = this.fftSize;
+
+                // get buffer length for analyze
+                this.bufferLength = this.bufferLength || this.analyser.frequencyBinCount;
+
+                // create unit array for analyze
+                this.dataWave = new Uint8Array (this.bufferLength);
+
+                // SVG
+                this._drawSVG (this.bufferLength, this.dataWave);
+
+                // Fire Event
+                this._eventSVG ();
+            }
+
+            /**
+             * Create Audio Context
+             * @private
+             */
+            static _createAudioContext () {
+                window.AudioContext = window.AudioContext || window.webkitAudioContext;
+                return new AudioContext ();
             }
         }
 
