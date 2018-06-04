@@ -7,7 +7,7 @@ This is playing with web audio api.
 Just write the path to the sound file and you can play it.
 
 ## Version
-1.8.0
+1.9.0
 
 ## DEMO
 
