@@ -183,7 +183,7 @@
                         this.playing = null;
                         this.sounding = null;
 
-                        this.dispatchEvent (new CustomEvent ('ended', {detail: {id: selected}}));
+                        this.dispatchEvent (new CustomEvent ('stopped', {detail: {id: selected}}));
                     }
                 } else {
                     return console.warn('not prepare sounds');
