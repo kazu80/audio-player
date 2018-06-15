@@ -117,6 +117,11 @@
                                 return comparison;
                             });
                         });
+
+                        // sounds imported
+                        if (this.audioElements.length === (i + 1)) {
+                            this.dispatchEvent (new CustomEvent ('imported', {bubbles: true, composed: true}));
+                        }
                     }
                 });
 
